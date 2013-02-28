@@ -38,6 +38,8 @@ SFError InitGraphics() {
     throw SF_ERROR_VIDEOMODE;
   }
 
+  SDL_WM_SetCaption("Starship Fontana", "Starship Fontana");
+
   return SF_ERROR_NONE;
 }
 
