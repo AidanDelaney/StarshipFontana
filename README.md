@@ -17,7 +17,7 @@ You will have to have the SDL development libraries installed on
 your system.  The easiest way to compile is to use a command-line
 
 `$ g++ -c src/Main.cpp`
-`$ g++ -o starship src/Main.o -lSDL`
+`$ g++ -o starship src/Main.o -lSDL -lSDL_image`
 
 which will produce an executable file called "starship" in the
 top-level directory.  To execute this file do the following
