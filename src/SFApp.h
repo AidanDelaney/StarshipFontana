@@ -4,6 +4,7 @@
 #include <memory>   // Pull in std::shared_ptr
 #include <iostream> // Pull in std::cerr, std::endl
 #include <list>     // Pull in list
+#include <sstream>
 
 using namespace std;
 
@@ -35,6 +36,9 @@ private:
   shared_ptr<SFBoundingBox>  app_box;
   list<shared_ptr<SFAsset> > projectiles;
   list<shared_ptr<SFAsset> > aliens;
+  list<shared_ptr<SFAsset> > coins;
+
+  int fire;
 
   SFError OnInit();
 };

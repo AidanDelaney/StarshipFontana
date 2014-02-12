@@ -1,7 +1,6 @@
 #include "SFApp.h"
 
-SFApp::SFApp() {
-  is_running = true;
+SFApp::SFApp() : fire(0), is_running(true) {
 
   surface = SDL_GetVideoSurface();
   app_box = make_shared<SFBoundingBox>(Vector2(surface->w/2, surface->h/2), surface->w/2, surface->h/2);
@@ -17,6 +16,11 @@ SFApp::SFApp() {
     alien->SetPosition(pos);
     aliens.push_back(alien);
   }
+
+  auto coin = make_shared<SFAsset>(SFASSET_COIN);
+  auto pos  = Point2((surface->w/4), 100);
+  coin->SetPosition(pos);
+  coins.push_back(coin);
 }
 
 SFApp::~SFApp() {
@@ -43,6 +47,10 @@ void SFApp::OnEvent(SFEvent& event) {
     player->GoEast();
     break;
   case SFEVENT_FIRE:
+    fire ++;
+    std::stringstream sstm;
+    sstm << "Fire " << fire;
+    SDL_WM_SetCaption(sstm.str().c_str(),  sstm.str().c_str());
     FireProjectile();
     break;
   }
@@ -63,6 +71,10 @@ void SFApp::OnUpdateWorld() {
   // Update projectile positions
   for(auto p: projectiles) {
     p->GoNorth();
+  }
+
+  for(auto c: coins) {
+    c->GoNorth();
   }
 
   // Update enemy positions
@@ -104,6 +116,10 @@ void SFApp::OnRender() {
 
   for(auto a: aliens) {
     if(a->IsAlive()) {a->OnRender(surface);}
+  }
+
+  for(auto c: coins) {
+    c->OnRender(surface);
   }
 
   // Switch the off-screen buffer to be on-screen
