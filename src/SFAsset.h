@@ -8,13 +8,10 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
-#include <sigc++/sigc++.h>
-
 using namespace std;
 
 #include "SFCommon.h"
 #include "SFEvent.h"
-#include "SFEventDispacher.h"
 #include "SFBoundingBox.h"
 
 /**
@@ -40,6 +37,7 @@ public:
   virtual void      GoNorth();
   virtual void      SetNotAlive();
   virtual bool      IsAlive();
+  virtual void      HandleCollision();
 
   virtual bool                      CollidesWith(shared_ptr<SFAsset>);
   virtual shared_ptr<SFBoundingBox> GetBoundingBox();

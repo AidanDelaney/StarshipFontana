@@ -32,11 +32,6 @@ SFAsset::SFAsset(SFASSETTYPE type) {
 
   // Initialise bounding box
   bbox = make_shared<SFBoundingBox>(SFBoundingBox(Vector2(0.0f, 0.0f), sprite->w, sprite->h));
-
-  // SFASSET_PROJECTILE and SFASSET_ALIEN are interested in SFEVENT_COLLISION
-  if(SFASSET_PROJECTILE == type || SFASSET_ALIEN == type) {
-    SFEventDispacher::GetInstance().RegisterInterest(id, SFEVENT_COLLISION, sigc::mem_fun(this, &SFAsset::SetNotAlive));
-  }
 }
 
 SFAsset::SFAsset(const SFAsset& a) {
@@ -46,7 +41,6 @@ SFAsset::SFAsset(const SFAsset& a) {
 }
 
 SFAsset::~SFAsset() {
-  SFEventDispacher::GetInstance().DeregisterInterestAll(id);
   bbox.reset();
   if(sprite) {
     SDL_FreeSurface(sprite);
@@ -132,4 +126,10 @@ void SFAsset::SetNotAlive() {
 
 bool SFAsset::IsAlive() {
   return (SFASSET_DEAD != type);
+}
+
+void SFAsset::HandleCollision() {
+  if(SFASSET_PROJECTILE == type || SFASSET_ALIEN == type) {
+    SetNotAlive();
+  }
 }

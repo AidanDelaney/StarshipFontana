@@ -11,7 +11,6 @@ using namespace std;
 #include "SFCommon.h"
 #include "SFEvent.h"
 #include "SFAsset.h"
-#include "SFEventDispacher.h"
 
 /**
  * Represents the StarshipFontana application.  It has responsibilities for

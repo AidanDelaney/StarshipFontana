@@ -86,8 +86,8 @@ void SFApp::OnUpdateWorld() {
   for(auto p : projectiles) {
     for(auto a : aliens) {
       if(p->CollidesWith(a)) {
-	SFEventDispacher::GetInstance().RaiseAndDispach(p->GetId(), SFEVENT_COLLISION);
-	SFEventDispacher::GetInstance().RaiseAndDispach(a->GetId(), SFEVENT_COLLISION);
+        p->HandleCollision();
+        a->HandleCollision();
       }
     }
   }
