@@ -4,8 +4,8 @@ SFBoundingBox::SFBoundingBox(const Vector2 centre,
 			     const int width,
 			     const int height) :
   centre(make_shared<Vector2>(centre)),
-  extent_x(make_shared<Vector2>(Vector2(width/2, 0))),
-  extent_y(make_shared<Vector2>(Vector2(0, height/2))) {
+  extent_x(make_shared<Vector2>(Vector2((float) width/2.0, 0))),
+  extent_y(make_shared<Vector2>(Vector2(0, (float) height/2.0))) {
 }
 
 SFBoundingBox::~SFBoundingBox() {
