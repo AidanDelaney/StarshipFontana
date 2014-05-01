@@ -1,11 +1,11 @@
 #include "SFBoundingBox.h"
 
 SFBoundingBox::SFBoundingBox(const Vector2 centre,
-			     const int width,
-			     const int height) :
+			     const int w,
+			     const int h) :
   centre(make_shared<Vector2>(centre)),
-  extent_x(make_shared<Vector2>(Vector2(width/2, 0))),
-  extent_y(make_shared<Vector2>(Vector2(0, height/2))) {
+  extent_x(make_shared<Vector2>(Vector2((float)w/2, 0))),  // float cast is necessary as
+  extent_y(make_shared<Vector2>(Vector2(0, (float)h/2))) { // dividing int truncates d.p.
 }
 
 SFBoundingBox::~SFBoundingBox() {
@@ -19,8 +19,10 @@ void SFBoundingBox::SetCentre(Vector2 & v) {
 }
 
 bool straddles(const pair<float, float> & a, const pair<float, float> & b) {
-  return (a.first >= b.first && a.first <= b.second)
-    || (a.second >= b.first && a.second <= b.second);
+  return (a.first >= b.first && a.first <= b.second)  // a1 intersects b
+    || (a.second >= b.first && a.second <= b.second)  // a2 intersects b
+    || (b.first >= a.first && b.first <= a.second)    // b1 intersects a
+    || (b.second >= a.first && b.second <= a.second); // b2 intersects a
 }
 
 pair<float,float> SFBoundingBox::projectOntoAxis(const SFBoundingBox & b, enum AXIS axis) {
@@ -29,16 +31,18 @@ pair<float,float> SFBoundingBox::projectOntoAxis(const SFBoundingBox & b, enum A
   switch (axis) {
   case X:
     {
-      Vector2 bx = *b.extent_x;
-      lo  = projection( Point2(Vector2(*(b.centre)) + (bx * -1)), xAxis());
-      hi  = projection( Point2(Vector2(*(b.centre)) + bx), xAxis());
+        Vector2 bc = *b.centre;
+        Vector2 bx = *b.extent_x;    
+        lo  = bc.getX() - bx.getX();
+        hi  = bc.getX() + bx.getX();
     }
     break;
   case Y:
     {
-      Vector2 by = *b.extent_y;
-      lo  = projection( Point2(Vector2(*(b.centre)) + (by * -1)), yAxis());
-      hi  = projection( Point2(Vector2(*(b.centre)) + by), yAxis());
+        Vector2 bc = *b.centre;
+        Vector2 by = *b.extent_y;
+        lo  = bc.getY() - by.getY();
+        hi  = bc.getY() + by.getY();
     }
     break;
   }
