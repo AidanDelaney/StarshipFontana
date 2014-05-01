@@ -19,8 +19,10 @@ void SFBoundingBox::SetCentre(Vector2 & v) {
 }
 
 bool straddles(const pair<float, float> & a, const pair<float, float> & b) {
-  return (a.first >= b.first && a.first <= b.second)
-    || (a.second >= b.first && a.second <= b.second);
+  return (a.first >= b.first && a.first <= b.second)  // a1 intersects b
+    || (a.second >= b.first && a.second <= b.second)  // a2 intersects b
+    || (b.first >= a.first && b.first <= a.second)    // b1 intersects a
+    || (b.second >= a.first && b.second <= a.second); // b2 intersects a
 }
 
 pair<float,float> SFBoundingBox::projectOntoAxis(const SFBoundingBox & b, enum AXIS axis) {
