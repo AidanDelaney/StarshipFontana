@@ -1,4 +1,4 @@
-#include <SDL/SDL.h>  // Pull in the SDL definitions
+#include <SDL2/SDL.h> // Pull in the SDL definitions
 #include <vector>     // Pull in the std::vector
 #include <memory>     // Pull in std::shared_ptr
 
@@ -6,6 +6,11 @@ using namespace std;  // So that we can write `vector` rather than `std::vector`
 
 #include "SFCommon.h"
 #include "SFApp.h"
+
+// Very Uncool Global Variable
+// Fixme: Bonus points for making this go away.
+SDL_Window * g_window;
+SDL_Renderer * g_renderer;
 
 enum userEvents{UPDATE_EVENT};
 
@@ -24,7 +29,7 @@ SFError InitGraphics() {
   Uint32 height = 480;
   Uint32 colour_depth = 16; // in bits
   Uint32 delay = 1000/60; // in milliseconds
-  
+
   // Initialise SDL - when using C/C++ it's common to have to
   // initialise libraries by calling a function within them.
   if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_TIMER)<0) {
@@ -33,12 +38,24 @@ SFError InitGraphics() {
   }
 
   // Create a new window
-  if (!(SDL_SetVideoMode(width, height, colour_depth, SDL_DOUBLEBUF))) {
+  g_window = SDL_CreateWindow("StarShip Fontana"
+                            , SDL_WINDOWPOS_CENTERED
+                            , SDL_WINDOWPOS_CENTERED
+                            , width
+                            , height
+                            , SDL_WINDOW_SHOWN);
+  if (!g_window) {
     cerr << "Failed to initialise video mode: " << SDL_GetError() << endl;
     throw SF_ERROR_VIDEOMODE;
   }
 
-  SDL_WM_SetCaption("Starship Fontana", "Starship Fontana");
+  g_renderer = SDL_CreateRenderer(g_window, -1, 0);
+  if (!g_renderer) {
+    cerr << "Failed to create renderer: " << SDL_GetError() << endl;
+    throw SF_ERROR_VIDEOMODE;
+  }
+
+  SDL_SetRenderDrawColor(g_renderer, 128, 128, 128, 255);
 
   return SF_ERROR_NONE;
 }
@@ -54,7 +71,8 @@ int main(int arc, char ** argv) {
   }
 
   // Initialise world
-  sfapp = shared_ptr<SFApp>(new SFApp());
+  std::shared_ptr<SFWindow> window = make_shared<SFWindow>(g_window, g_renderer);
+  sfapp = shared_ptr<SFApp>(new SFApp(window));
 
   // Set up top-level timer to UpdateWorld
   // Call the function "display" every delay milliseconds

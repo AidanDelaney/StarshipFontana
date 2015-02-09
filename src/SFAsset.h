@@ -5,13 +5,14 @@
 #include <memory>
 #include <iostream>
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 using namespace std;
 
 #include "SFCommon.h"
 #include "SFEvent.h"
+#include "SFWindow.h"
 #include "SFBoundingBox.h"
 
 /**
@@ -24,14 +25,14 @@ enum SFASSETTYPE {SFASSET_DEAD, SFASSET_PLAYER, SFASSET_PROJECTILE, SFASSET_ALIE
 
 class SFAsset {
 public:
-  SFAsset(const SFASSETTYPE);
+  SFAsset(const SFASSETTYPE, const std::shared_ptr<SFWindow>);
   SFAsset(const SFAsset&);
   virtual ~SFAsset();
 
   virtual void      SetPosition(Point2 &);
   virtual Point2    GetPosition();
   virtual SFAssetId GetId();
-  virtual void      OnRender(SDL_Surface *);
+  virtual void      OnRender();
   virtual void      GoEast();
   virtual void      GoWest();
   virtual void      GoNorth();
@@ -46,10 +47,11 @@ private:
   // but, because we need to call SDL_FreeSurface on it, we can't.
   // (or we could use a std::shared_ptr with a custom Deleter, but
   // that's a little too much right now)
-  SDL_Surface               * sprite;
+  SDL_Texture               * sprite;
   shared_ptr<SFBoundingBox>   bbox;
   SFASSETTYPE                 type;
   SFAssetId                   id;
+  std::shared_ptr<SFWindow>   sf_window;
 
   static int SFASSETID;
 };

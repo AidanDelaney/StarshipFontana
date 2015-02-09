@@ -2,40 +2,40 @@
 
 int SFAsset::SFASSETID=0;
 
-SFAsset::SFAsset(SFASSETTYPE type) {
-  this->type = type;
+SFAsset::SFAsset(SFASSETTYPE type, std::shared_ptr<SFWindow> window): type(type), sf_window(window) {
   this->id   = ++SFASSETID;
-  SDL_Surface * tmp_surf;
 
   switch (type) {
   case SFASSET_PLAYER:
-    tmp_surf = IMG_Load("assets/player.png");
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/player.png");
     break;
   case SFASSET_PROJECTILE:
-    tmp_surf = IMG_Load("assets/projectile.png");
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/projectile.png");
     break;
   case SFASSET_ALIEN:
-    tmp_surf = IMG_Load("assets/alien.png");
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/alien.png");
     break;
   case SFASSET_COIN:
-    tmp_surf = IMG_Load("assets/coin.png");
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/coin.png");
     break;
   }
 
-  if(!tmp_surf) {
+  if(!sprite) {
     cerr << "Could not load asset of type " << type << endl;
     throw SF_ERROR_LOAD_ASSET;
   }
 
-  sprite = SDL_DisplayFormatAlpha(tmp_surf);
-  SDL_FreeSurface(tmp_surf);
+  // Get texture width & height
+  int w, h;
+  SDL_QueryTexture(sprite, NULL, NULL, &w, &h);
 
   // Initialise bounding box
-  bbox = make_shared<SFBoundingBox>(SFBoundingBox(Vector2(0.0f, 0.0f), sprite->w, sprite->h));
+  bbox = make_shared<SFBoundingBox>(SFBoundingBox(Vector2(0.0f, 0.0f), w, h));
 }
 
 SFAsset::SFAsset(const SFAsset& a) {
   sprite = a.sprite;
+  sf_window = a.sf_window;
   bbox   = a.bbox;
   type   = a.type;
 }
@@ -43,8 +43,8 @@ SFAsset::SFAsset(const SFAsset& a) {
 SFAsset::~SFAsset() {
   bbox.reset();
   if(sprite) {
-    SDL_FreeSurface(sprite);
-    sprite = NULL;
+    SDL_DestroyTexture(sprite);
+    sprite = nullptr;
   }
 }
 
@@ -55,11 +55,14 @@ SFAsset::~SFAsset() {
  * need to convert between the two coordinate spaces.  We assume
  * that there is a 1-to-1 quantisation.
  */
-Vector2 GameSpaceToScreenSpace(Vector2 &r) {
+Vector2 GameSpaceToScreenSpace(SDL_Renderer* renderer, Vector2 &r) {
+  int w, h;
+  SDL_GetRendererOutputSize(renderer, &w, &h);
+
   return Vector2 (
-		  r.getX(),
-		  (SDL_GetVideoSurface()->h - r.getY())
-		  );
+                  r.getX(),
+                  (h - r.getY())
+                  );
 }
 
 void SFAsset::SetPosition(Point2 & point) {
@@ -75,19 +78,19 @@ SFAssetId SFAsset::GetId() {
   return id;
 }
 
-void SFAsset::OnRender(SDL_Surface * level) {
+void SFAsset::OnRender() {
   // 1. Get the SDL_Rect from SFBoundingBox
   SDL_Rect rect;
 
   Vector2 gs = (*(bbox->centre) + (*(bbox->extent_x) * -1)) + (*(bbox->extent_y) * -1);
-  Vector2 ss = GameSpaceToScreenSpace(gs);
+  Vector2 ss = GameSpaceToScreenSpace(sf_window->getRenderer(), gs);
   rect.x = ss.getX();
   rect.y = ss.getY();
   rect.w = bbox->extent_x->getX() * 2;
   rect.h = bbox->extent_y->getY() * 2;
 
   // 2. Blit the sprite onto the level
-  SDL_BlitSurface(sprite, NULL, level, &rect);
+  SDL_RenderCopy(sf_window->getRenderer(), sprite, NULL, &rect);
 }
 
 void SFAsset::GoWest() {
@@ -99,8 +102,11 @@ void SFAsset::GoWest() {
 }
 
 void SFAsset::GoEast() {
+  int w, h;
+  SDL_GetRendererOutputSize(sf_window->getRenderer(), &w, &h);
+
   Vector2 c = *(bbox->centre) + Vector2(5.0f, 0.0f);
-  if(!(c.getX() > SDL_GetVideoSurface()->w)) {
+  if(!(c.getX() > w)) {
     bbox->centre.reset();
     bbox->centre = make_shared<Vector2>(c);
   }
