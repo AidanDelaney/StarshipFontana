@@ -16,7 +16,7 @@ of Commander Fontana in **Starship Fontana**.
 You will have to have the SDL development libraries installed on
 your system.  The easiest way to compile is to use a command-line
 
-```c++
+```bash
 $ g++ -c src/*.cpp
 $ g++ -o starship *.o -lSDL2 -lSDL2_image
 ```
