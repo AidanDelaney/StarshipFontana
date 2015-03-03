@@ -18,6 +18,11 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_w
     aliens.push_back(alien);
   }
 
+  auto meteor = make_shared<SFAsset>(SFASSET_METEOR, sf_window);
+  auto meteor_pos = Point2(canvas_w - 100, 300.0f);
+  meteor->SetPosition(meteor_pos);
+  meteors.push_back(meteor);
+
   auto coin = make_shared<SFAsset>(SFASSET_COIN, sf_window);
   auto pos  = Point2((canvas_w/4), 100);
   coin->SetPosition(pos);
@@ -71,6 +76,10 @@ void SFApp::OnUpdateWorld() {
     p->GoNorth();
   }
 
+  for(auto m: meteors) {
+    m->GoSouth();
+  }
+
   for(auto c: coins) {
     c->GoNorth();
   }
@@ -86,6 +95,12 @@ void SFApp::OnUpdateWorld() {
       if(p->CollidesWith(a)) {
         p->HandleCollision();
         a->HandleCollision();
+      }
+    }
+    for(auto m : meteors) {
+      if(p->CollidesWith(m)) {
+        p->HandleCollision();
+        m->HandleCollision();
       }
     }
   }
@@ -113,6 +128,10 @@ void SFApp::OnRender() {
 
   for(auto a: aliens) {
     if(a->IsAlive()) {a->OnRender();}
+  }
+
+  for(auto m: meteors) {
+    if(m->IsAlive()) {m->OnRender();}
   }
 
   for(auto c: coins) {

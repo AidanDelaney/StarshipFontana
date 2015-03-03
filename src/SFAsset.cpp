@@ -15,6 +15,9 @@ SFAsset::SFAsset(SFASSETTYPE type, std::shared_ptr<SFWindow> window): type(type)
   case SFASSET_ALIEN:
     sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/alien.png");
     break;
+  case SFASSET_METEOR:
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/meteor.png");
+    break;
   case SFASSET_COIN:
     sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/coin.png");
     break;
@@ -118,6 +121,12 @@ void SFAsset::GoNorth() {
   bbox->centre = make_shared<Vector2>(c);
 }
 
+void SFAsset::GoSouth() {
+  Vector2 c = *(bbox->centre) + Vector2(0.0f, -1.0f);
+  bbox->centre.reset();
+  bbox->centre = make_shared<Vector2>(c);
+}
+
 bool SFAsset::CollidesWith(shared_ptr<SFAsset> other) {
   return bbox->CollidesWith(other->bbox);
 }
@@ -135,7 +144,7 @@ bool SFAsset::IsAlive() {
 }
 
 void SFAsset::HandleCollision() {
-  if(SFASSET_PROJECTILE == type || SFASSET_ALIEN == type) {
+  if(SFASSET_PROJECTILE == type || SFASSET_ALIEN == type || SFASSET_METEOR == type) {
     SetNotAlive();
   }
 }
