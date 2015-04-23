@@ -6,7 +6,7 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_w
 
   app_box = make_shared<SFBoundingBox>(Vector2(canvas_w, canvas_h), canvas_w, canvas_h);
   player  = make_shared<SFAsset>(SFASSET_PLAYER, sf_window);
-  auto player_pos = Point2(canvas_w, 88.0f);
+  auto player_pos = Point2(canvas_w/2, 22);
   player->SetPosition(player_pos);
 
   const int number_of_aliens = 10;

@@ -82,7 +82,7 @@ void SFAsset::OnRender() {
   // 1. Get the SDL_Rect from SFBoundingBox
   SDL_Rect rect;
 
-  Vector2 gs = (*(bbox->centre) + (*(bbox->extent_x) * -1)) + (*(bbox->extent_y) * -1);
+  Vector2 gs = (*(bbox->centre) + (*(bbox->extent_x) * -1)) + (*(bbox->extent_y) * 1);
   Vector2 ss = GameSpaceToScreenSpace(sf_window->getRenderer(), gs);
   rect.x = ss.getX();
   rect.y = ss.getY();
