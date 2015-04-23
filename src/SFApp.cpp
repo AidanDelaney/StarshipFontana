@@ -58,9 +58,9 @@ int SFApp::OnExecute() {
   // Execute the app
   SDL_Event event;
   while (SDL_WaitEvent(&event) && is_running) {
-    // if this is an update event, then handle it in SFApp,
-    // otherwise punt it to the SFEventDispacher.
+    // wrap an SDL_Event with our SFEvent
     SFEvent sfevent((const SDL_Event) event);
+    // handle our SFEvent
     OnEvent(sfevent);
   }
 }
