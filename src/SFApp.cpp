@@ -51,10 +51,12 @@ void SFApp::OnEvent(SFEvent& event) {
     fire ++;
     FireProjectile();
     break;
+  default:
+    break;
   }
 }
 
-int SFApp::OnExecute() {
+void SFApp::OnExecute() {
   // Execute the app
   SDL_Event event;
   while (SDL_WaitEvent(&event) && is_running) {
