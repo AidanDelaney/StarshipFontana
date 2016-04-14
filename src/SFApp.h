@@ -22,7 +22,7 @@ public:
   SFApp(std::shared_ptr<SFWindow>);
   virtual ~SFApp();
   void    OnEvent(SFEvent &);
-  int     OnExecute();
+  void    OnExecute();
   void    OnUpdateWorld();
   void    OnRender();
 
